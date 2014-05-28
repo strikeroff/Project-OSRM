@@ -18,8 +18,10 @@ class OSRMError < StandardError
   private
 
   def log_tail path, n
-    File.open(path) do |f|
-      return f.tail(n).map { |line| "  > #{line}" }.join "\n"
+    Dir.chdir TEST_FOLDER do
+      File.open(path) do |f|
+        return f.tail(n).map { |line| "  > #{line}" }.join "\n"
+      end
     end
   end
 end
