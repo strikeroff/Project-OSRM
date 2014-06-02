@@ -3,22 +3,26 @@ class File
   #read last n lines of a file. useful for getting last part of a big log file.
   def tail(n)
     buffer = 1024
-    idx = (size - buffer).abs
     chunks = []
     lines = 0
+
+    if size>buffer
+      idx = size - buffer
+    else
+      idx = 0
+      buffer = size
+    end
 
     begin
       seek(idx)
       chunk = read(buffer)
-      lines += chunk.count("\n")
-      chunks.unshift chunk
+      if chunk
+        lines += chunk.count("\n")
+        chunks.unshift chunk
+      end
       idx -= buffer
-    end while lines < ( n + 1 ) && pos != 0
+    end while lines < ( n + 1 ) && pos!=0 && idx>=0
 
-    tail_of_file = chunks.join('')
-    ary = tail_of_file.split(/\n/)
-    lines_to_return = ary[ ary.size - n, ary.size - 1 ]
-  rescue
-    ["Cannot read log file!"]
+    chunks.join('').split(/\n/).reverse.take(n)
   end
 end

@@ -19,8 +19,13 @@ class OSRMError < StandardError
 
   def log_tail path, n
     Dir.chdir TEST_FOLDER do
-      File.open(path) do |f|
-        return f.tail(n).map { |line| "  > #{line}" }.join "\n"
+      expanded = File.expand_path path
+      if File.exists? expanded
+        File.open(expanded) do |f|
+          return f.tail(n).map { |line| "  > #{line}" }.join "\n"
+        end
+      else
+        return "File '#{expanded} does not exist!"
       end
     end
   end
